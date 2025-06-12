@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ankieta Studencka – Pytanie po pytaniu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .question {
+      display: none;
+    }
+
+    .question.active {
+      display: block;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .final-message {
+      display: none;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🧠 Ankieta Studencka 💡</h2>
+
+  <form action="https://formspree.io/f/xqabqpbj" method="POST" id="quizForm">
+    <div class="question active">
+      <label>Badanie jest anonimowe, a wyniki zostaną wykorzystane wyłącznie do celów naukowych</label><br>
+      <label>Serdecznie zapraszam do wypełnienia ankiety</label><br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>1. Płeć</label><br>
+      <input type="radio" name="q1" value="kobieta"> Kobieta<br>
+      <input type="radio" name="q1" value="meżczyzna"> Mężczyzna<br>
+      <input type="radio" name="q1" value="pedal"> Śmigłowiec szturmowy<br>
+      <input type="radio" name="q1" value="tajne"> Tajne<br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>2. Na którym jesteś roku studiów?</label><br>
+      <input type="radio" name="q2" value="1"> 1<br>
+      <input type="radio" name="q2" value="2"> 2<br>
+      <input type="radio" name="q2" value="3"> 3<br>
+      <input type="radio" name="q2" value="4+"> 4+<br>
+      <input type="radio" name="q2" value="tajne"> Tajne przez poufne<br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>3. Jak oceniasz atmosfere na studiach?</label><br>
+      <select name="q3">
+        <option value="uwu">Uwielbiam to miejsce</option>
+        <option value="frend">Atmosfera jest przyjazna i wspierająca</option>
+        <option value="cool">Jest w porządku, ale mogłoby być lepiej</option>
+        <option value="toxic">Atmosfera jest toksyczna i stresująca</option>
+        <option value="idead">Żałuję że jestem na studiach</option>
+      </select><br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>4. Który przedmiot najbardziej daje w kość?</label><br>
+      <input type="radio" name="q4" value="matematyka"> Matematyka<br>
+      <input type="radio" name="q4" value="Geografia"> Geografia<br>
+      <input type="radio" name="q4" value="Chemia"> Chemia<br>
+      <input type="radio" name="q4" value="Biologia"> Biologia<br>
+      <input type="radio" name="q4" value="Fizyka"> Fizyka<br>
+      <input type="radio" name="q4" value="Angielski"> Angielski<br>
+      <input type="radio" name="q4" value="wszystkie"> Wszystkie powyższe 🧠🔥<br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>5. Czy korzystasz z chatGPT do nauki?</label><br>
+      <input type="radio" name="q5" value="tak"> Tak, codziennie<br>
+      <input type="radio" name="q5" value="czasem"> Sporadycznie<br>
+      <input type="radio" name="q5" value="nie"> Nie<br>
+      <input type="radio" name="q5" value="coto"> Co to jest chatGPT?<br>
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>6. Jaki sposób relaksu po uczelni wybierasz?</label><br>
+      <input type="checkbox" name="q6" value="netflix"> Netflix<br>
+      <input type="checkbox" name="q6" value="sport"> Sport<br>
+      <input type="checkbox" name="q6" value="znajomi"> Ze znajomymi<br>
+      <input type="checkbox" name="q6" value="ksiazka"> Film /Książka<br>
+      <input type="checkbox" name="q6" value="sen"> Spanie <br>
+      <input type="checkbox" name="q6" value="sen"> Odpoczynek jest dla słabych<br>
+      <img src="obraz/popracy.gif" width="100%">
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>7. Aktywnie czy spokojnie spędzasz czas?</label><br>
+      <input type="radio" name="q7" value="aktywnie"> Aktywnie<br>
+      <input type="radio" name="q7" value="spokojnie"> Spokojnie<br>
+      <input type="radio" name="q7" value="mix"> Mieszanka<br>
+      <img src="obraz/gym.gif" width="100%">
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>8. Co wybierasz na wieczór?</label><br>
+      <input type="radio" name="q8" value="pizza"> Pizza na chacie<br>
+      <input type="radio" name="q8" value="spacer"> Spacer<br>
+      <input type="radio" name="q8" value="kino"> Kino<br>
+      <input type="radio" name="q8" value="teening"> trening na siłowni<br>
+      <input type="radio" name="q8" value="kawa"> Kawka<br>
+      <input type="radio" name="q8" value="reustaracja"> Reustaracja<br>
+      <input type="radio" name="q8" value="zalezy"> Zależy z kim<br>
+      <img src="obraz/spotkanie.gif" width="100%">
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>9. Jaki wolisz sposób komunikacji?</label><br>
+      <input type="radio" name="q9" value="Mess"> Mess<br>
+      <input type="radio" name="q9" value="Insta"> Insta<br>
+      <input type="radio" name="q9" value="Dzwoń"> Dzwoń<br>
+      <input type="radio" name="q9" value="List"> List polecony<br>
+      <input type="radio" name="q9" value="Szukaj"> Szukaj mnie <br>
+      <img src="obraz/list.gif" width="100%">
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <label>10. Co byś powiedziała na spotkanie?</label><br>
+      <input type="radio" name="q10" value="czemu"> czemu nie<br>
+      <input type="radio" name="q10" value="usmiech"> Zapraszam na trening<br>
+      <input type="radio" name="q10" value="wiem"> Nie widzę tego<br>
+      <input type="radio" name="q10" value="lel"> Nie rozumiem ale buja<br>
+      <img src="obraz/clap.gif" width="100%">
+      <button type="button" onclick="nextQuestion()">Dalej</button>
+    </div>
+
+    <div class="question">
+      <p>Dziękuję za udział w ankiecie! kliknij zakończ i napisz co sądzisz</p>
+      <img src="obraz/kissss.gif" width="100%">
+      <button type="submit">Zakończ</button>
+    </div>
+
+  </form>
+
+  <script>
+    let current = 0;
+    const questions = document.querySelectorAll('.question');
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        questions[current].classList.remove('active');
+        current++;
+        questions[current].classList.add('active');
+      }
+    };
+  </script>
+
+</body>
+</html>
