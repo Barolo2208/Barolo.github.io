@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aplikacja do Nauki</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    input, textarea {
+      width: 90%;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    ul {
+      text-align: left;
+      padding-left: 0;
+    }
+    li {
+      list-style: none;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="startScreen" class="container">
+  <h1>Przygotowanie do Obrony</h1>
+  <button id="startBtn">Start</button>
+  <button id="bazaBtn">Baza Pytań</button>
+</div>
+
+<div id="bazaScreen" class="container hidden">
+  <h2>Dodaj Pytanie</h2>
+  <input type="text" id="pytanieInput" placeholder="Wpisz pytanie"><br>
+  <textarea id="odpowiedzInput" placeholder="Wpisz odpowiedź"></textarea><br>
+  <button id="dodajPytanieBtn">Dodaj</button>
+  <button id="powrotBtn">Powrót</button>
+  <h3>Lista Pytań:</h3>
+  <ul id="listaPytan"></ul>
+</div>
+
+<div id="quizScreen" class="container hidden">
+  <h2 id="quizPytanie">Pytanie</h2>
+  <button id="pokazOdpBtn">Pokaż odpowiedź</button>
+  <p id="quizOdpowiedz" class="hidden"></p>
+  <div id="ocenaBtns" class="hidden">
+    <button id="dobrzeBtn">Dobrze</button>
+    <button id="zleBtn">Źle</button>
+  </div>
+</div>
+
+<div id="wynikScreen" class="container hidden">
+  <h2>Twój Wynik</h2>
+  <p id="rezultat"></p>
+  <button id="powrotStartBtn">Powrót na start</button>
+</div>
+
+<script>
+  const startScreen = document.getElementById('startScreen');
+  const bazaScreen = document.getElementById('bazaScreen');
+  const quizScreen = document.getElementById('quizScreen');
+  const wynikScreen = document.getElementById('wynikScreen');
+
+  const startBtn = document.getElementById('startBtn');
+  const bazaBtn = document.getElementById('bazaBtn');
+  const dodajPytanieBtn = document.getElementById('dodajPytanieBtn');
+  const powrotBtn = document.getElementById('powrotBtn');
+  const powrotStartBtn = document.getElementById('powrotStartBtn');
+
+  const pytanieInput = document.getElementById('pytanieInput');
+  const odpowiedzInput = document.getElementById('odpowiedzInput');
+  const listaPytan = document.getElementById('listaPytan');
+
+  const quizPytanie = document.getElementById('quizPytanie');
+  const pokazOdpBtn = document.getElementById('pokazOdpBtn');
+  const quizOdpowiedz = document.getElementById('quizOdpowiedz');
+  const ocenaBtns = document.getElementById('ocenaBtns');
+  const dobrzeBtn = document.getElementById('dobrzeBtn');
+  const zleBtn = document.getElementById('zleBtn');
+
+  const rezultat = document.getElementById('rezultat');
+
+  let pytania = [];
+  let aktualnePytanie = 0;
+  let poprawne = 0;
+  let bledne = 0;
+  let losowaKolejnosc = [];
+
+  // Wczytaj dane z localStorage
+  wczytajPytania();
+
+  startBtn.onclick = () => {
+    if (pytania.filter(p => p.aktywne).length === 0) {
+      alert("Zaznacz przynajmniej jedno aktywne pytanie.");
+      return;
+    }
+    startScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    rozpocznijQuiz();
+  };
+
+  bazaBtn.onclick = () => {
+    startScreen.classList.add('hidden');
+    bazaScreen.classList.remove('hidden');
+    wyswietlListePytan();
+  };
+
+  powrotBtn.onclick = () => {
+    bazaScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+  };
+
+  powrotStartBtn.onclick = () => {
+    wynikScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+  };
+
+  dodajPytanieBtn.onclick = () => {
+    const pyt = pytanieInput.value.trim();
+    const odp = odpowiedzInput.value.trim();
+    if (pyt && odp) {
+      pytania.push({ pytanie: pyt, odpowiedz: odp, aktywne: true });
+      pytanieInput.value = '';
+      odpowiedzInput.value = '';
+      zapiszPytania();
+      wyswietlListePytan();
+    } else {
+      alert("Wpisz zarówno pytanie, jak i odpowiedź.");
+    }
+  };
+
+  function wyswietlListePytan() {
+    listaPytan.innerHTML = '';
+    pytania.forEach((el, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${index + 1}. ${el.pytanie}
+        <label style="margin-left:10px;">
+          <input type="checkbox" onchange="toggleAktywne(${index})" ${el.aktywne ? "checked" : ""}>
+          Aktywne
+        </label>
+        <button onclick="usunPytanie(${index})"
+          style="margin-left:10px; background:red; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;">
+          Usuń
+        </button>
+      `;
+      listaPytan.appendChild(li);
+    });
+  }
+
+  function toggleAktywne(index) {
+    pytania[index].aktywne = !pytania[index].aktywne;
+    zapiszPytania();
+  }
+
+  function usunPytanie(index) {
+    if (confirm("Czy na pewno chcesz usunąć to pytanie?")) {
+      pytania.splice(index, 1);
+      zapiszPytania();
+      wyswietlListePytan();
+    }
+  }
+
+  function rozpocznijQuiz() {
+    const aktywnePytania = pytania
+      .map((p, i) => ({ ...p, index: i }))
+      .filter(p => p.aktywne);
+
+    if (aktywnePytania.length === 0) {
+      alert("Brak aktywnych pytań.");
+      quizScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      return;
+    }
+
+    losowaKolejnosc = aktywnePytania.map(p => p.index);
+    losowaKolejnosc.sort(() => Math.random() - 0.5);
+
+    aktualnePytanie = 0;
+    poprawne = 0;
+    bledne = 0;
+    pokazPytanie();
+  }
+
+  function pokazPytanie() {
+    const indeks = losowaKolejnosc[aktualnePytanie];
+    quizPytanie.textContent = pytania[indeks].pytanie;
+    quizOdpowiedz.textContent = pytania[indeks].odpowiedz;
+    quizOdpowiedz.classList.add('hidden');
+    ocenaBtns.classList.add('hidden');
+    pokazOdpBtn.classList.remove('hidden');
+  }
+
+  pokazOdpBtn.onclick = () => {
+    quizOdpowiedz.classList.remove('hidden');
+    ocenaBtns.classList.remove('hidden');
+    pokazOdpBtn.classList.add('hidden');
+  };
+
+  dobrzeBtn.onclick = () => {
+    poprawne++;
+    nastepnePytanie();
+  };
+
+  zleBtn.onclick = () => {
+    bledne++;
+    nastepnePytanie();
+  };
+
+  function nastepnePytanie() {
+    aktualnePytanie++;
+    if (aktualnePytanie >= losowaKolejnosc.length) {
+      pokazWynik();
+    } else {
+      pokazPytanie();
+    }
+  }
+
+  function pokazWynik() {
+    quizScreen.classList.add('hidden');
+    wynikScreen.classList.remove('hidden');
+    rezultat.textContent = `Poprawne odpowiedzi: ${poprawne} / ${losowaKolejnosc.length}`;
+  }
+
+  function zapiszPytania() {
+    localStorage.setItem('pytania', JSON.stringify(pytania));
+  }
+
+  function wczytajPytania() {
+    const dane = localStorage.getItem('pytania');
+    if (dane) {
+      try {
+        pytania = JSON.parse(dane);
+        pytania = pytania.map(p => ({
+          ...p,
+          aktywne: p.aktywne !== undefined ? p.aktywne : true
+        }));
+      } catch (e) {
+        console.error("Błąd ładowania pytań z localStorage");
+        pytania = [];
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
+
+
